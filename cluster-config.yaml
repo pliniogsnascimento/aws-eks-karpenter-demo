@@ -1,0 +1,45 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: karpenter-demo
+  region: {{.AWS_DEFAULT_REGION}}
+  version: "{{.K8S_VERSION}}"
+  tags:
+    karpenter.sh/discovery: karpenter-demo
+
+iam:
+  withOIDC: true
+  podIdentityAssociations:
+  - namespace: "kube-system"
+    serviceAccountName: karpenter
+    roleName: karpenter-demo-karpenter
+    permissionPolicyARNs:
+    - arn:aws:iam::{{.AWS_ACCOUNT_ID}}:policy/KarpenterControllerPolicy-karpenter-demo
+
+iamIdentityMappings:
+- arn: "arn:aws:iam::{{.AWS_ACCOUNT_ID}}:role/KarpenterNodeRole-karpenter-demo"
+  username: system:node:{{EC2PrivateDNSName}}
+  groups:
+  - system:bootstrappers
+  - system:nodes
+  ## If you intend to run Windows workloads, the kube-proxy group should be specified.
+  # For more information, see https://github.com/aws/karpenter/issues/5099.
+  # - eks:kube-proxy-windows
+
+managedNodeGroups:
+- instanceType: m5.large
+  amiFamily: AmazonLinux2023
+  name: karpenter-demo-ng
+  desiredCapacity: 2
+  minSize: 1
+  maxSize: 10
+
+addons:
+- name: eks-pod-identity-agent
+
+KARPENTER_NAMESPACE: "kube-system"
+KARPENTER_VERSION: "1.5.0"
+K8S_VERSION: "1.32"
+CLUSTER_NAME: "karpenter-demo"
+AWS_DEFAULT_REGION: "us-east-2"
+AWS_PARTITION: "aws"
