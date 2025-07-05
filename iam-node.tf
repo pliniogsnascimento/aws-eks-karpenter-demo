@@ -43,4 +43,5 @@ resource "aws_iam_role_policy_attachment" "karpenter_node_role_ssm" {
 resource "aws_eks_access_entry" "karpenter_node_role" {
   cluster_name = module.cluster.cluster_name
   principal_arn = resource.aws_iam_role.karpenter_node_role.arn
+  type = "EC2_LINUX"
 }

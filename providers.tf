@@ -12,6 +12,12 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
+
+  default_tags {
+    tags = {
+      "karpenter.sh/discovery" = local.cluster_name
+    }
+  }
 }
 
 provider "kubernetes" {

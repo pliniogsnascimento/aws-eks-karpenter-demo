@@ -1,4 +1,9 @@
-# resource "helm_release" "karpenter" {
-#   repository = "oci://public.ecr.aws/karpenter/karpenter"
-#   chart = "karpenter"
-# }
+resource "helm_release" "karpenter" {
+  name             = "karpenter"
+  namespace        = "karpenter"
+  repository       = "oci://public.ecr.aws/karpenter"
+  chart            = "karpenter"
+  create_namespace = true
+
+  values = ["${file("${path.module}/values.yaml")}"]
+}

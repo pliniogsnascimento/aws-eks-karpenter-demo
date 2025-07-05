@@ -9,4 +9,9 @@ controller:
     limits:
       cpu: 1
       memory: 1Gi
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Equal
+    value: "true"
+    effect: NoSchedule
       
